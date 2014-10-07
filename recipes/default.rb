@@ -10,3 +10,14 @@
 package "tightvncserver" do
   action :install
 end
+
+template "/etc/init.d/vncboot" do
+  source "vncboot.erb"
+  mode "0755"
+end
+
+service "vncboot" do
+  supports :start => true, :stop => true, :restart => true
+  action [:start, :enable]
+  subscribes :restart, "template[/etc/init.d/vncboot]", :immediately 
+end

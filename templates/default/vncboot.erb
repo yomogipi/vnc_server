@@ -1,0 +1,39 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides: vncboot
+# Required-Start: $remote_fs $syslog
+# Required-Stop: $remote_fs $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Start VNC Server at boot time
+# Description: Start VNC Server at boot time.
+### END INIT INFO
+
+export USER=<%= node['vnc_server']['user'] %>
+
+. /lib/lsb/init-functions
+
+case "$1" in
+ start)
+  log_action_begin_msg "Start VNC Server  on localhost::<%= node['vnc_server']['display'] %>"
+  su ${USER} -c "/usr/bin/vncserver -depth <%= node['vnc_server']['depth'] %> -geometry <%= node['vnc_server']['geometry'] %> :<%= node['vnc_server']['display'] %>"
+  ;;
+
+ stop)
+  log_action_begin_msg "Stop VNC Server on localhost::<%= node['vnc_server']['display'] %>"
+  su ${USER} -c "/usr/bin/vncserver -kill :<%= node['vnc_server']['display'] %>"
+  ;;
+
+ restart)
+  $0 stop
+  $0 start
+  ;;
+
+ *)
+  echo "Usage: /etc/init.d/vncboot {start|stop}"
+  exit 1
+  ;;
+esac
+
+exit 0
+
